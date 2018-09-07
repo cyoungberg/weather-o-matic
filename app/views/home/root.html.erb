@@ -1,0 +1,7 @@
+<div>
+  <h1>Weather-o-matic</h1>
+  <%= form_tag(weather_path, method: "get") do %>
+    <%= text_field_tag(:city) %>
+    <%= submit_tag('Submit') %>
+  <% end %>
+</div>
