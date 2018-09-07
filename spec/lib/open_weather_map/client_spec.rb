@@ -81,6 +81,8 @@ JSON
       expect(results.main.pressure).to eq(1012)
     end
 
-    it 'Maps the etc....'
+    it 'Maps the etc....' do
+      # etc...
+    end
   end
 end
