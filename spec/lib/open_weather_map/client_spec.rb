@@ -2,7 +2,64 @@ require 'rails_helper'
 
 describe OpenWeatherMap::Client do
   subject { described_class.new('APIKEY') }
-  let(:response_body) { <<-JSON
+
+  describe '#get_weather_by_city' do
+    let (:parsed_response) {
+      { 
+        'main' => {
+          'temp' => 280.32,
+          'pressure' => 1012,
+          'humidity' => 81,
+          'temp_min' => 279.15,
+          'temp_max' => 281.15
+        }
+      }
+    }
+
+    it 'requests the weather for the specified city' do
+      expect(subject).to receive(:get)
+        .with('weather', { q: 'Deadwood'})
+        .and_return(parsed_response)
+      subject.get_weather_by_city('Deadwood')
+    end
+
+    it 'returns the mapped response' do
+      allow(subject).to receive(:get).and_return(parsed_response)
+      results = subject.get_weather_by_city('Deadwood')
+      expect(results.main.temp).to eq(280.32)
+    end
+  end
+
+  describe '#map_weather_response' do
+    let (:parsed_response) {
+      { 
+        'main' => {
+          'temp' => 280.32,
+          'pressure' => 1012,
+          'humidity' => 81,
+          'temp_min' => 279.15,
+          'temp_max' => 281.15
+        }
+      }
+    }
+
+    it 'maps the temp' do
+      results = subject.send(:map_weather_response, parsed_response)
+      expect(results.main.temp).to eq(280.32)
+    end
+
+    it 'maps the pressure' do
+      results = subject.send(:map_weather_response, parsed_response)
+      expect(results.main.pressure).to eq(1012)
+    end
+
+    it 'Maps the etc....' do
+      # etc...
+    end
+  end
+
+  describe '#get' do
+    let(:response_body) { <<-JSON
 {
   "coord": {
     "lon": -0.13,
@@ -47,8 +104,6 @@ describe OpenWeatherMap::Client do
 }
 JSON
 }
-
-  describe '#get_weather' do
     let (:response) { double(Faraday::Response, body: response_body) }
     let (:connection) { double(Faraday) }
 
@@ -56,33 +111,12 @@ JSON
       allow(subject).to receive(:conn).and_return(connection)
     end
 
-    it 'Makes a call to the open weather service' do
-      expect(connection).to receive(:get).and_return(response)
-      subject.get_weather('Deadwood')
-    end
+    it 'makes a request to the weather service with an api key' do
+      expect(connection).to receive(:get)
+        .with('some_path', { some_param: 'some_val', appid: 'APIKEY' } )
+        .and_return(response)
 
-    it 'Returns the mapped response' do
-      expect(connection).to receive(:get).and_return(response)
-      results = subject.get_weather('Deadwood')
-      expect(results.main.temp).to eq(280.32)
-    end
-  end
-
-  describe '#map_weather_response' do
-    let(:parsed_response) { JSON.parse(response_body) }
-
-    it 'Maps the temp' do
-      results = subject.send(:map_weather_response, parsed_response)
-      expect(results.main.temp).to eq(280.32)
-    end
-
-    it 'Maps the pressure' do
-      results = subject.send(:map_weather_response, parsed_response)
-      expect(results.main.pressure).to eq(1012)
-    end
-
-    it 'Maps the etc....' do
-      # etc...
+      subject.send(:get, 'some_path', { some_param: 'some_val' })
     end
   end
 end

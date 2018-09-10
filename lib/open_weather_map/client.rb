@@ -6,24 +6,21 @@ module OpenWeatherMap
       @api_key = api_key
     end
 
-    def get_weather(city)
-      response = conn.get 'weather', { q: city, appid: @api_key}
-      
-      parsed_response = JSON.parse(response.body)
-      # parsed_response = {
-      #   'main' {
-      #     'temp' 280.23,
-      #     'pressure' 1012,
-      #     'humidity' 81,
-      #     'temp_min' 279.15,
-      #     'temp_max' 281.15
-      #   }
-      # }
-
-      return map_weather_response(parsed_response)
+    def get_weather_by_city(city)
+      response = get('weather', { q: city })
+      return map_weather_response(response)
     end
 
     private
+
+    def get(path, options)
+      options ||= {}
+      options[:appid] = @api_key
+
+      response = conn.get path, options
+      
+      return JSON.parse(response.body)
+    end
 
     def conn
       return Faraday.new(url: ROOT_URL) do |faraday|
@@ -34,6 +31,7 @@ module OpenWeatherMap
     end
     
     def map_weather_response(response_json)
+      # just mapping a few keys for now - see spec for example response
       weather = WeatherResponse.new
 
       main = WeatherResponse::Main.new
