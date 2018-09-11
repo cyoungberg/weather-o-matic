@@ -1,24 +1,27 @@
-# README
+# Weather-O-Matic
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Get the weather for any city right in your browser!
 
-Things you may want to cover:
+## Development Environment Setup
 
-* Ruby version
+### Add Rails Master Key
 
-* System dependencies
+Sensitive credentials are encrypted, so you'll need the master key to use them. Once you are given
+it, create a new file named `config/master.key`:
 
-* Configuration
+```sh
+echo "THEMASTERKEY" >> config/master.key
+```
 
-* Database creation
+### Install Gems
 
-* Database initialization
+```sh
+bundle install
+```
 
-* How to run the test suite
+### Start Your Dev Server
 
-* Services (job queues, cache servers, search engines, etc.)
+```sh
+rails s
+```
 
-* Deployment instructions
-
-* ...
