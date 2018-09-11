@@ -104,7 +104,7 @@ describe OpenWeatherMap::Client do
 }
 JSON
 }
-    let (:response) { double(Faraday::Response, body: response_body) }
+    let (:response) { double(Faraday::Response, status: 200, body: response_body) }
     let (:connection) { double(Faraday) }
 
     before do
@@ -117,6 +117,19 @@ JSON
         .and_return(response)
 
       subject.send(:get, 'some_path', { some_param: 'some_val' })
+    end
+
+    it 'raises an error if the status is 500' do
+      allow(response).to receive(:status).and_return(500)
+      allow(connection).to receive(:get).and_return(response)
+
+      expect{subject.send(:get, 'some_path')}.to raise_error(OpenWeatherMap::Client::OpenWeatherMapRequestError)
+    end
+
+    it 'returns the parsed json' do
+      allow(connection).to receive(:get).and_return(response)
+      results = subject.send(:get, 'some_path')
+      expect(results['main']['temp']).to eq(280.32)
     end
   end
 end
