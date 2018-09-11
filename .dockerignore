@@ -1,0 +1,22 @@
+.git
+.gitignore
+README.md
+
+#
+# Rails
+#
+config/master.key
+.env
+.env.sample
+*.rbc
+log
+tmp
+coverage/
+spec/tmp
+**.orig
+
+.bundle
+
+.ruby-version
+.ruby-gemset
+
